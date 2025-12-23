@@ -1,3 +1,7 @@
+// 📁 DIRECTORIO: src/types/index.ts
+// 📄 ARCHIVO: index.ts
+// 🔧 Definiciones de tipos TypeScript para la aplicación
+
 export interface Message {
   id: string;
   content: string;
@@ -31,6 +35,6 @@ export interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
 }

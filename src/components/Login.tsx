@@ -1,3 +1,7 @@
+// 📁 DIRECTORIO: src/components/Login.tsx
+// 📄 ARCHIVO: Login.tsx
+// 🔧 VERSIÓN CORREGIDA: Errores de casteo Boolean a String eliminados
+
 import React, { useState } from 'react';
 import {
   View,
@@ -108,7 +112,7 @@ export function Login({ onLogin }: LoginProps) {
                 placeholderTextColor={colors.muted}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={true}
                 editable={!isLoading}
               />
             </View>

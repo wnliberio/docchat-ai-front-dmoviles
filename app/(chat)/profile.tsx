@@ -1,5 +1,6 @@
 // 📁 DIRECTORIO: app/(chat)/profile.tsx
 // 📄 ARCHIVO: profile.tsx
+// 🔧 VERSIÓN CORREGIDA: Mejora de tipado y renderizado condicional seguro
 
 import React from 'react';
 import {
@@ -25,25 +26,29 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    Alert.alert('Cerrar Sesión', '¿Estás seguro de que deseas cerrar sesión?', [
-      {
-        text: 'Cancelar',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {
-        text: 'Cerrar Sesión',
-        onPress: () => {
-          logout();
-          router.replace('/(auth)/login');
+  const handleLogout = (): void => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => {},
+          style: 'cancel',
         },
-        style: 'destructive',
-      },
-    ]);
+        {
+          text: 'Cerrar Sesión',
+          onPress: () => {
+            logout();
+            router.replace('/(auth)/login');
+          },
+          style: 'destructive',
+        },
+      ]
+    );
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = (): void => {
     Alert.alert(
       'Eliminar Cuenta',
       '¿Estás seguro? Esta acción no se puede deshacer.',
@@ -66,55 +71,45 @@ export default function ProfileScreen() {
     );
   };
 
+  const userEmail = user?.email || 'email@example.com';
+  const userName = user?.name || 'Usuario';
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View
         style={[
           styles.header,
-          {
-            backgroundColor: colors.background,
-            borderBottomColor: colors.border,
-            paddingTop: insets.top,
-          },
+          { borderBottomColor: colors.border, paddingTop: insets.top },
         ]}
       >
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Mi Perfil
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Perfil</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      {/* Content */}
       <ScrollView
-        style={styles.content}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + 20 },
+        ]}
       >
-        {/* Profile Card */}
-        <View
-          style={[
-            styles.profileCard,
-            { backgroundColor: colors.inputBackground },
-          ]}
-        >
-          {/* Avatar */}
-          <View style={styles.avatarContainer}>
-            <View style={[styles.avatar, { backgroundColor: '#a855f7' }]}>
-              <Text style={styles.avatarText}>
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
-              </Text>
-            </View>
+        {/* Profile Avatar */}
+        <View style={styles.avatarSection}>
+          <View style={[styles.avatar, { backgroundColor: '#a855f7' }]}>
+            <Text style={styles.avatarText}>
+              {userName.charAt(0).toUpperCase()}
+            </Text>
           </View>
-
-          {/* User Info */}
           <Text style={[styles.userName, { color: colors.text }]}>
-            {user?.name || 'Usuario'}
+            {userName}
           </Text>
           <Text style={[styles.userEmail, { color: colors.muted }]}>
-            {user?.email || 'email@example.com'}
+            {userEmail}
           </Text>
         </View>
 
@@ -135,7 +130,7 @@ export default function ProfileScreen() {
                 Email
               </Text>
               <Text style={[styles.settingValue, { color: colors.muted }]}>
-                {user?.email || 'email@example.com'}
+                {userEmail}
               </Text>
             </View>
           </TouchableOpacity>
@@ -151,7 +146,7 @@ export default function ProfileScreen() {
                 Nombre
               </Text>
               <Text style={[styles.settingValue, { color: colors.muted }]}>
-                {user?.name || 'Usuario'}
+                {userName}
               </Text>
             </View>
           </TouchableOpacity>
@@ -187,6 +182,13 @@ export default function ProfileScreen() {
             <Text style={styles.actionButtonText}>Eliminar Cuenta</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Version Info */}
+        <View style={styles.versionInfo}>
+          <Text style={[styles.versionText, { color: colors.muted }]}>
+            DocChat AI v1.0.0
+          </Text>
+        </View>
       </ScrollView>
     </View>
   );
@@ -208,18 +210,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: 16,
   },
-  profileCard: {
-    borderRadius: 16,
-    padding: 24,
+  avatarSection: {
     alignItems: 'center',
-    marginVertical: 20,
-  },
-  avatarContainer: {
-    marginBottom: 16,
+    marginVertical: 32,
   },
   avatar: {
     width: 80,
@@ -227,6 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 16,
   },
   avatarText: {
     fontSize: 32,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   userName: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '600',
     marginBottom: 4,
   },
@@ -242,41 +242,48 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   section: {
-    marginVertical: 20,
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   settingItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '600',
     marginBottom: 4,
   },
   settingValue: {
-    fontSize: 14,
+    fontSize: 12,
   },
   actionButton: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: 12,
-    gap: 8,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
   },
   actionButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    flex: 1,
+  },
+  versionInfo: {
+    alignItems: 'center',
+    marginTop: 32,
+    paddingVertical: 16,
+  },
+  versionText: {
+    fontSize: 12,
   },
 });

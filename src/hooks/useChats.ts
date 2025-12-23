@@ -1,4 +1,8 @@
-import { useState, useCallback } from 'react';
+// 📁 DIRECTORIO: src/hooks/useChats.ts
+// 📄 ARCHIVO: useChats.ts
+// 🔧 VERSIÓN CORREGIDA: Tipado mejorado y gestión de estado segura
+
+import { useState, useCallback, useMemo } from 'react';
 import { Chat, Message, DeletedChat } from '../types';
 
 const MOCK_CHATS: Chat[] = [
@@ -60,17 +64,29 @@ const MOCK_CHATS: Chat[] = [
   },
 ];
 
-export function useChats() {
+interface UseChatReturn {
+  chats: Chat[];
+  deletedChats: DeletedChat[];
+  selectedChat: Chat | null;
+  addChat: (chat: Chat) => void;
+  deleteChat: (chatId: string) => void;
+  restoreChat: (chatId: string) => void;
+  deletePermanently: (chatId: string) => void;
+  addMessage: (chatId: string, message: Message) => void;
+  setSelectedChat: (chat: Chat | null) => void;
+}
+
+export function useChats(): UseChatReturn {
   const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
   const [deletedChats, setDeletedChats] = useState<DeletedChat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 
-  const addChat = useCallback((chat: Chat) => {
+  const addChat = useCallback((chat: Chat): void => {
     setChats((prev) => [chat, ...prev]);
   }, []);
 
   const deleteChat = useCallback(
-    (chatId: string) => {
+    (chatId: string): void => {
       const chatToDelete = chats.find((c) => c.id === chatId);
       if (chatToDelete) {
         setDeletedChats((prev) => [
@@ -87,7 +103,7 @@ export function useChats() {
   );
 
   const restoreChat = useCallback(
-    (chatId: string) => {
+    (chatId: string): void => {
       const chatToRestore = deletedChats.find((c) => c.id === chatId);
       if (chatToRestore) {
         const { deletedAt, ...chat } = chatToRestore;
@@ -98,11 +114,11 @@ export function useChats() {
     [deletedChats]
   );
 
-  const deletePermanently = useCallback((chatId: string) => {
+  const deletePermanently = useCallback((chatId: string): void => {
     setDeletedChats((prev) => prev.filter((c) => c.id !== chatId));
   }, []);
 
-  const addMessage = useCallback((chatId: string, message: Message) => {
+  const addMessage = useCallback((chatId: string, message: Message): void => {
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === chatId
@@ -128,15 +144,18 @@ export function useChats() {
     );
   }, []);
 
-  return {
-    chats,
-    deletedChats,
-    selectedChat,
-    addChat,
-    deleteChat,
-    restoreChat,
-    deletePermanently,
-    addMessage,
-    setSelectedChat,
-  };
+  return useMemo(
+    () => ({
+      chats,
+      deletedChats,
+      selectedChat,
+      addChat,
+      deleteChat,
+      restoreChat,
+      deletePermanently,
+      addMessage,
+      setSelectedChat,
+    }),
+    [chats, deletedChats, selectedChat, addChat, deleteChat, restoreChat, deletePermanently, addMessage]
+  );
 }

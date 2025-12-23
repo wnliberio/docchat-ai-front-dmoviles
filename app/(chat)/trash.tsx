@@ -1,5 +1,6 @@
 // 📁 DIRECTORIO: app/(chat)/trash.tsx
 // 📄 ARCHIVO: trash.tsx
+// 🔧 VERSIÓN CORREGIDA: Errores de casteo y tipado mejorado
 
 import React from 'react';
 import {
@@ -10,6 +11,7 @@ import {
   useColorScheme,
   TouchableOpacity,
   Alert,
+  ListRenderItem,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +23,7 @@ import {
 } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useChats } from '@/src/hooks/useChats';
+import { DeletedChat } from '@/src/types';
 
 export default function TrashScreen() {
   const router = useRouter();
@@ -30,12 +33,12 @@ export default function TrashScreen() {
   const insets = useSafeAreaInsets();
   const { deletedChats, restoreChat, deletePermanently } = useChats();
 
-  const handleRestore = (chatId) => {
+  const handleRestore = (chatId: string): void => {
     restoreChat(chatId);
     Alert.alert('Éxito', 'Documento restaurado correctamente');
   };
 
-  const handlePermanentDelete = (chatId, title) => {
+  const handlePermanentDelete = (chatId: string, title: string): void => {
     Alert.alert(
       'Eliminar Permanentemente',
       `¿Eliminar "${title}" de forma permanente? Esta acción no se puede deshacer.`,
@@ -56,7 +59,7 @@ export default function TrashScreen() {
     );
   };
 
-  const renderTrashItem = ({ item }) => {
+  const renderTrashItem: ListRenderItem<DeletedChat> = ({ item }) => {
     const timeAgo = new Date(item.deletedAt).toLocaleDateString('es-ES');
 
     return (
@@ -101,6 +104,8 @@ export default function TrashScreen() {
     );
   };
 
+  const isTrashEmpty = deletedChats.length === 0;
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
@@ -126,7 +131,7 @@ export default function TrashScreen() {
       </View>
 
       {/* Content */}
-      {deletedChats.length === 0 ? (
+      {isTrashEmpty ? (
         <View style={styles.emptyContainer}>
           <Trash2 size={64} color={colors.muted} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>

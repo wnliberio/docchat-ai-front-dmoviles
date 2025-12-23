@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+// 📁 DIRECTORIO: src/components/ChatList.tsx
+// 📄 ARCHIVO: ChatList.tsx
+// 🔧 VERSIÓN CORREGIDA: Errores de casteo Boolean a String y props eliminados
+
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -36,7 +40,7 @@ export function ChatList({
   const colors = isDark ? Colors.dark : Colors.light;
   const [showDeleteId, setShowDeleteId] = useState<string | null>(null);
 
-  const getFileIcon = (fileType: string) => {
+  const getFileIcon = (fileType: string): string => {
     if (fileType.includes('pdf')) return '📄';
     if (fileType.includes('doc')) return '📝';
     if (fileType.includes('sheet') || fileType.includes('excel')) return '📊';
@@ -44,7 +48,7 @@ export function ChatList({
     return '📎';
   };
 
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date): string => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -64,24 +68,31 @@ export function ChatList({
     }
   };
 
-  const handleDeleteClick = (chatId: string) => {
-    Alert.alert('Eliminar', '¿Deseas mover este documento a la papelera?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar',
-        onPress: () => {
-          onDeleteChat(chatId);
-          setShowDeleteId(null);
+  const handleDeleteClick = (chatId: string): void => {
+    Alert.alert(
+      'Eliminar',
+      '¿Deseas mover este documento a la papelera?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          onPress: () => {
+            onDeleteChat(chatId);
+            setShowDeleteId(null);
+          },
+          style: 'destructive',
         },
-        style: 'destructive',
-      },
-    ]);
+      ]
+    );
   };
 
-  const handleNewChat = () => {
+  const handleNewChat = (): void => {
     const fileName = `documento_${Date.now()}.pdf`;
     onNewChat(fileName);
   };
+
+  const hasChatItems = useMemo(() => chats.length > 0, [chats.length]);
+  const hasDeletedChats = useMemo(() => deletedChatsCount > 0, [deletedChatsCount]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -106,7 +117,7 @@ export function ChatList({
           <Text style={styles.uploadButtonText}>Subir Documento</Text>
         </TouchableOpacity>
 
-        {deletedChatsCount > 0 && (
+        {hasDeletedChats ? (
           <TouchableOpacity
             style={[styles.trashButton, { backgroundColor: colors.cardBackground }]}
             onPress={onShowTrash}
@@ -123,11 +134,11 @@ export function ChatList({
               </Text>
             </View>
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
 
       {/* Chat List */}
-      {chats.length === 0 ? (
+      {!hasChatItems ? (
         <View style={styles.emptyContainer}>
           <View style={[styles.emptyIcon, { backgroundColor: colors.cardBackground }]}>
             <FileText size={40} color={colors.muted} />
@@ -195,7 +206,10 @@ function ChatListItem({
         </View>
         <View style={styles.chatInfo}>
           <View style={styles.chatTitleRow}>
-            <Text style={[styles.chatTitle, { color: colors.text }]} numberOfLines={1}>
+            <Text 
+              style={[styles.chatTitle, { color: colors.text }]} 
+              numberOfLines={1}
+            >
               {chat.title}
             </Text>
             <Text style={[styles.chatTime, { color: colors.muted }]}>
@@ -211,14 +225,14 @@ function ChatListItem({
         </View>
       </View>
 
-      {showDelete && (
+      {showDelete ? (
         <TouchableOpacity
           style={[styles.deleteButton, { backgroundColor: colors.cardBackground }]}
           onPress={onDelete}
         >
           <Trash2 size={20} color="#dc2626" />
         </TouchableOpacity>
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 }

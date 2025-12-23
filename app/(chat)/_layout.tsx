@@ -1,12 +1,13 @@
-// 📁 DIRECTORIO: app/(chat)/_layout.tsx
+// 📁 DIRECTORIO: app/(auth)/_layout.tsx
 // 📄 ARCHIVO: _layout.tsx
+// 🔧 CORRECCIÓN: Stack correcta para rutas de autenticación
 
 import { Stack } from 'expo-router';
 
-export default function ChatLayout() {
+export default function AuthLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="chat-list" />
+      <Stack.Screen name="login" />
     </Stack>
   );
 }
