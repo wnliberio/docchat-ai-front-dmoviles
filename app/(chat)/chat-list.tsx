@@ -1,33 +1,19 @@
+// 📁 DIRECTORIO: app/(chat)/chat-list.tsx
+// 📄 ARCHIVO: chat-list.tsx
+
 import React from 'react';
-import { useRouter } from 'expo-router';
-import { useColorScheme } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { useChats } from '@/src/hooks/useChats';
-import { ChatList } from '@/src/components/ChatList';
+import { View, Text, Button } from 'react-native';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function ChatListScreen() {
-  const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
-  const { chats, deletedChats, setSelectedChat } = useChats();
+  const { logout } = useAuth();
 
   return (
-    <ChatList
-      chats={chats}
-      deletedChatsCount={deletedChats.length}
-      onSelectChat={(chat) => {
-        setSelectedChat(chat);
-        router.push('/(chat)/chat-view');
-      }}
-      onDeleteChat={() => {}}
-      onShowProfile={() => {
-        router.push('/(chat)/profile');
-      }}
-      onShowTrash={() => {
-        router.push('/(chat)/trash');
-      }}
-      onNewChat={() => {}}
-    />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
+        ✅ LOGIN FUNCIONÓ
+      </Text>
+      <Button title="Logout" onPress={logout} color="#a855f7" />
+    </View>
   );
 }

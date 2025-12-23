@@ -1,3 +1,6 @@
+// 📁 DIRECTORIO: app/_layout.tsx
+// 📄 ARCHIVO: _layout.tsx
+
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -36,9 +39,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [fontsLoaded] = useFonts({});
 
   if (!fontsLoaded) {
     return null;
