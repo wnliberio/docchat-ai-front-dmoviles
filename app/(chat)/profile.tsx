@@ -1,6 +1,6 @@
 // 📁 DIRECTORIO: app/(chat)/profile.tsx
 // 📄 ARCHIVO: profile.tsx
-// 🔧 VERSIÓN CORREGIDA: Mejora de tipado y renderizado condicional seguro
+// 🔧 VERSIÓN CORREGIDA: Logout funcional
 
 import React from 'react';
 import {
@@ -26,21 +26,41 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
 
-  const handleLogout = (): void => {
+  // ═══════════════════════════════════════════════════════════════════════
+  // FUNCIÓN: Cerrar Sesión
+  // ═══════════════════════════════════════════════════════════════════════
+  const handleLogout = async (): Promise<void> => {
+    console.log('👋 handleLogout iniciado');
+    
     Alert.alert(
       'Cerrar Sesión',
       '¿Estás seguro de que deseas cerrar sesión?',
       [
         {
           text: 'Cancelar',
-          onPress: () => {},
+          onPress: () => {
+            console.log('❌ Logout cancelado');
+          },
           style: 'cancel',
         },
         {
           text: 'Cerrar Sesión',
-          onPress: () => {
-            logout();
-            router.replace('/(auth)/login');
+          onPress: async () => {
+            try {
+              console.log('🔄 Ejecutando logout...');
+              
+              // Ejecutar logout
+              await logout();
+              
+              console.log('✅ Logout exitoso');
+              
+              // Redirigir a login
+              router.replace('/(auth)/login');
+              
+            } catch (error) {
+              console.error('❌ Error en logout:', error);
+              Alert.alert('Error', 'No se pudo cerrar sesión');
+            }
           },
           style: 'destructive',
         },
@@ -48,22 +68,41 @@ export default function ProfileScreen() {
     );
   };
 
-  const handleDeleteAccount = (): void => {
+  // ═══════════════════════════════════════════════════════════════════════
+  // FUNCIÓN: Eliminar Cuenta
+  // ═══════════════════════════════════════════════════════════════════════
+  const handleDeleteAccount = async (): Promise<void> => {
+    console.log('🗑️ handleDeleteAccount iniciado');
+    
     Alert.alert(
       'Eliminar Cuenta',
       '¿Estás seguro? Esta acción no se puede deshacer.',
       [
         {
           text: 'Cancelar',
-          onPress: () => {},
+          onPress: () => {
+            console.log('❌ Eliminación cancelada');
+          },
           style: 'cancel',
         },
         {
           text: 'Eliminar',
-          onPress: () => {
-            Alert.alert('Cuenta Eliminada', 'Tu cuenta ha sido eliminada.');
-            logout();
-            router.replace('/(auth)/login');
+          onPress: async () => {
+            try {
+              console.log('🔄 Eliminando cuenta...');
+              
+              // Ejecutar logout
+              await logout();
+              
+              console.log('✅ Cuenta eliminada');
+              
+              // Redirigir a login
+              router.replace('/(auth)/login');
+              
+            } catch (error) {
+              console.error('❌ Error al eliminar:', error);
+              Alert.alert('Error', 'No se pudo eliminar la cuenta');
+            }
           },
           style: 'destructive',
         },
